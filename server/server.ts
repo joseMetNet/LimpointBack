@@ -6,6 +6,8 @@ import userRouter from '../routes/user.router';
 import vehicleRouter from '../routes/vehicle.router'
 import authRouter from '../routes/auth.router'
 import orderRouter from '../routes/order.router'
+import vehicleTypeRouter from '../routes/vehicleType.router';
+import brandVehicleRouter from '../routes/brandVehicle.router';
 
 class Server{
     private app: Application;
@@ -45,6 +47,8 @@ class Server{
         this.app.use("/api", userRouter);
         this.app.use("/api", vehicleRouter);
         this.app.use("/api", orderRouter);
+        this.app.use("/api", vehicleTypeRouter);
+        this.app.use("/api", brandVehicleRouter);
     }
 
     listen() {
