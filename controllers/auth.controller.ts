@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import bcryptjs from 'bcryptjs';
 import { generateJWT, parseJwt } from '../helpers/generateJWT';
 import User from '../models/user.model';
+import salePointModel from '../models/salePoint.model';
 
 export const login = async (req: Request, res: Response) => {
    const { email, password } = req.body;
@@ -9,7 +10,13 @@ export const login = async (req: Request, res: Response) => {
       const userExist: any = await User.findOne({
          where: {
             email
-         }
+         },
+         include: [
+            {
+               model: salePointModel,
+               as: 'salePoint'
+            }
+         ]
       });
 
       if (!userExist) {
@@ -34,10 +41,11 @@ export const login = async (req: Request, res: Response) => {
       const user = {
          id: userExist.id,
          name: userExist.userName,
-         email: userExist.email
+         email: userExist.email,
+         salePoint: userExist.salePoint
       };
 
-      return res.json({
+      return res.status(200).json({
          msg: 'ok',
          token,
          expiresIn,
