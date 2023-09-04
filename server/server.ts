@@ -13,6 +13,9 @@ import agreementRouter from '../routes/agreement.router';
 import objectRouter from '../routes/object.router';
 import typeServiceRouter from '../routes/typeService.router';
 import detailServiceRouter from '../routes/serviceDetail.router';
+import resourceRouter from '../routes/resource.router';
+
+import fileUpload from 'express-fileupload';
 
 class Server {
    private app: Application;
@@ -45,6 +48,8 @@ class Server {
       this.app.use(express.json());
       // Carpeta pública
       this.app.use(express.static('public'));
+
+      this.app.use(fileUpload({ useTempFiles: true, tempFileDir: '/tmp/' }));
    }
 
    routes () {
@@ -59,11 +64,12 @@ class Server {
       this.app.use('/api', objectRouter);
       this.app.use('/api', typeServiceRouter);
       this.app.use('/api', detailServiceRouter);
+      this.app.use('/api', resourceRouter);
    }
 
    listen () {
       this.app.listen(this.port, () => {
-         console.log(`Servidor corriendo en puerto ${  this.port}`);
+         console.log(`Servidor corriendo en puerto ${this.port}`);
       });
    }
 }

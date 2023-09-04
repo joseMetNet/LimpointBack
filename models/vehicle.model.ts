@@ -41,4 +41,12 @@ Vehicle.belongsTo(clientModel, {
    as: 'client'
 });
 
+
+// orderServiceModel.hasMany(Vehicle, { foreignKey: 'id' });
+
+// Vehicle.belongsTo(orderServiceModel, {
+//    foreignKey: 'idVehicle',
+//    as: 'vehicle'
+// });
+
 export default Vehicle;

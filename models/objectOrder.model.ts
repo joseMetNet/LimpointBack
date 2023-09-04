@@ -1,21 +1,16 @@
 import { DataTypes, Sequelize } from 'sequelize';
 import db from '../database/connection';
 
-const orderDetailServiceModel = db.define(
-   'orderDetailService',
+const objectOrderModel = db.define(
+   'objectOrder',
    {
       idOrder: {
          type: DataTypes.INTEGER,
          allowNull: false
       },
-      idDetailService: {
+      idObject: {
          type: DataTypes.INTEGER,
          allowNull: false
-      },
-      createdAt: {
-         type: DataTypes.DATE,
-         allowNull: true,
-         defaultValue: DataTypes.NOW
       }
    },
    {
@@ -23,4 +18,4 @@ const orderDetailServiceModel = db.define(
    }
 );
 
-export default orderDetailServiceModel;
+export default objectOrderModel;
