@@ -1,13 +1,15 @@
 import { Router } from 'express';
-import { postOrder, getOrders, updateOrderInventory, getOrderById, getOrderSize } from '../controllers/order.controller';
+import { postOrder, getOrders, updateOrderInventory, getOrderById, getOrderSize, getStatusOrder, updateStatusOrder, getOrderRateById } from '../controllers/order.controller';
 import { check } from 'express-validator';
 import { validateFields } from '../middlewares/validations';
 
 const orderRouter = Router();
 
 orderRouter.get('/order', getOrders);
-orderRouter.get('/orderSize/:idSalePoint', getOrderSize);
+orderRouter.get('/orderStatus', getStatusOrder);
+orderRouter.get('/orderSize/:plate', getOrderSize);
 orderRouter.get('/order/:id', getOrderById);
+orderRouter.get('/orderRate/:id', getOrderRateById);
 orderRouter.post(
    '/order',
    [
@@ -23,6 +25,13 @@ orderRouter.put(
    '/order',
    [ check('id', 'El id de la orden es obligatoria').not().isEmpty(), validateFields ],
    updateOrderInventory
+);
+
+orderRouter.put(
+   '/orderStatusOrder',
+   [ check('id', 'El id de la orden es obligatoria').not().isEmpty(), validateFields ],
+   [ check('idStatusOrder', 'El estado de la orden es obligatorio').not().isEmpty(), validateFields ],
+   updateStatusOrder
 );
 
 export default orderRouter;

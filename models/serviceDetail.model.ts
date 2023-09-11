@@ -1,5 +1,6 @@
 import { DataTypes, Sequelize } from 'sequelize';
 import db from '../database/connection';
+import typeServiceModel from './typeServices.model';
 
 const serviceDetailModel = db.define(
    'serviceDetail',
@@ -35,5 +36,12 @@ const serviceDetailModel = db.define(
       timestamps: false
    }
 );
+
+
+typeServiceModel.hasMany(serviceDetailModel, { foreignKey: 'id' });
+serviceDetailModel.belongsTo(typeServiceModel, {
+   foreignKey: 'idTypeService',
+   as: 'service'
+});
 
 export default serviceDetailModel;

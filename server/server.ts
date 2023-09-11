@@ -16,6 +16,7 @@ import detailServiceRouter from '../routes/serviceDetail.router';
 import resourceRouter from '../routes/resource.router';
 
 import fileUpload from 'express-fileupload';
+import rateRouter from '../routes/rate.router';
 
 class Server {
    private app: Application;
@@ -65,6 +66,7 @@ class Server {
       this.app.use('/api', typeServiceRouter);
       this.app.use('/api', detailServiceRouter);
       this.app.use('/api', resourceRouter);
+      this.app.use('/api', rateRouter);
    }
 
    listen () {

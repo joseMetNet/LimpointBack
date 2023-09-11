@@ -1,6 +1,6 @@
 import { DataTypes, Sequelize } from 'sequelize';
 import db from '../database/connection';
-import orderServiceModel from './order.model';
+import orderModel from './order.model';
 import ResourceModel from './resource.model';
 
 const orderResourceModel = db.define(
@@ -25,10 +25,10 @@ const orderResourceModel = db.define(
    }
 );
 
-orderResourceModel.hasMany(orderServiceModel, { foreignKey: 'id' });
-orderServiceModel.belongsToMany(ResourceModel, { through: orderResourceModel,  foreignKey: 'idOrder', as: 'resource' });
+orderResourceModel.hasMany(orderModel, { foreignKey: 'id' });
+orderModel.belongsToMany(ResourceModel, { through: orderResourceModel,  foreignKey: 'idOrder', as: 'resource' });
 
 orderResourceModel.hasMany(ResourceModel, { foreignKey: 'id' });
-ResourceModel.belongsToMany(orderServiceModel, { through: orderResourceModel,  foreignKey: 'idResource', as: 'order' });
+ResourceModel.belongsToMany(orderModel, { through: orderResourceModel,  foreignKey: 'idResource', as: 'order' });
 
 export default orderResourceModel;

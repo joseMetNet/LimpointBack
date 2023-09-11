@@ -1,5 +1,7 @@
 import { DataTypes, Sequelize } from 'sequelize';
 import db from '../database/connection';
+import orderModel from './order.model';
+import serviceDetailModel from './serviceDetail.model';
 
 const orderDetailServiceModel = db.define(
    'orderDetailService',
@@ -22,5 +24,12 @@ const orderDetailServiceModel = db.define(
       timestamps: false
    }
 );
+
+
+orderDetailServiceModel.hasMany(orderModel, { foreignKey: 'id' });
+orderModel.belongsToMany(serviceDetailModel, { through: orderDetailServiceModel,  foreignKey: 'idOrder', as: 'typeWash' });
+
+orderDetailServiceModel.hasMany(serviceDetailModel, { foreignKey: 'id' });
+serviceDetailModel.belongsToMany(orderModel, { through: orderDetailServiceModel,  foreignKey: 'idDetailService', as: 'order' });
 
 export default orderDetailServiceModel;

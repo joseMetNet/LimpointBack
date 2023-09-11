@@ -1,6 +1,6 @@
 import { DataTypes, Sequelize } from "sequelize";
 import db from "../database/connection";
-import orderServiceModel from './order.model';
+import orderModel from './order.model';
 import orderResourceModel from './orderResource.model';
 
 const ResourceModel = db.define(
@@ -27,9 +27,5 @@ const ResourceModel = db.define(
     timestamps: false,
   }
 );
-
-
-// ResourceModel.belongsToMany(orderServiceModel, { through: orderResourceModel });
-
 
 export default ResourceModel;

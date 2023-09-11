@@ -5,7 +5,7 @@ import { uploadFileCopy, deleteFileSystem } from '../helpers/uploadFile';
 import { uploadFileAzure, deleteFileAzure } from '../helpers/uploadAzureFile';
 import { azureConfig } from '../config/azureStorage-config';
 import orderResourceModel from '../models/orderResource.model';
-import orderServiceModel from '../models/order.model';
+import orderModel from '../models/order.model';
 
 export const postResource = async (req: Request, res: Response) => {
    try {
@@ -198,7 +198,7 @@ export const getResourcesOrder = async (req: Request, res: Response) => {
       const resources = await ResourceModel.findAll({
          attributes: [ 'id', 'observation', 'url' ],
          include: {
-            model: orderServiceModel,
+            model: orderModel,
             as: 'order',
             where: { id: idOrder },
             through: { attributes: [] },

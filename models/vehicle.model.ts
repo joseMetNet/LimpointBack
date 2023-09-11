@@ -1,6 +1,9 @@
 import { DataTypes } from 'sequelize';
 import db from '../database/connection';
 import clientModel from './client.model';
+import vehicleTypeModel from './vehicleType.model';
+import brandVehicleModel from './brandVehicle.model';
+import agreementModel from './agreement.model';
 
 const Vehicle = db.define('Vehicles', {
    idClient: {
@@ -35,18 +38,29 @@ const Vehicle = db.define('Vehicles', {
 });
 
 clientModel.hasMany(Vehicle, { foreignKey: 'id' });
-
 Vehicle.belongsTo(clientModel, {
    foreignKey: 'idClient',
    as: 'client'
 });
 
+vehicleTypeModel.hasMany(Vehicle, { foreignKey: 'id' });
+Vehicle.belongsTo(vehicleTypeModel, {
+   foreignKey: 'idTypeVehicle',
+   as: 'typeVehicle'
+});
 
-// orderServiceModel.hasMany(Vehicle, { foreignKey: 'id' });
+brandVehicleModel.hasMany(Vehicle, { foreignKey: 'id' });
+Vehicle.belongsTo(brandVehicleModel, {
+   foreignKey: 'idBrand',
+   as: 'brand'
+});
 
-// Vehicle.belongsTo(orderServiceModel, {
-//    foreignKey: 'idVehicle',
-//    as: 'vehicle'
-// });
+agreementModel.hasMany(Vehicle, { foreignKey: 'id' });
+Vehicle.belongsTo(agreementModel, {
+   foreignKey: 'idAgreement',
+   as: 'agreement'
+});
+
+
 
 export default Vehicle;

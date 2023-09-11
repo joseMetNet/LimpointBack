@@ -3,9 +3,12 @@ import db from '../database/connection';
 import Vehicle from './vehicle.model';
 import clientModel from './client.model';
 import orderResourceModel from './orderResource.model';
+import statusOrderModel from './statusOrder.model';
+import salePointModel from './salePoint.model';
+import RateModel from './rateOrder.model';
 
-const orderServiceModel = db.define(
-   'orderService',
+const orderModel = db.define(
+   'order',
    {
       idVehicle: {
          type: DataTypes.INTEGER,
@@ -15,12 +18,16 @@ const orderServiceModel = db.define(
          type: DataTypes.INTEGER,
          allowNull: false
       },
-      idStatusOrderService: {
+      idStatusOrder: {
          type: DataTypes.INTEGER,
          allowNull: true,
          defaultValue: 1
       },
       idSalePoint: {
+         type: DataTypes.INTEGER,
+         allowNull: true
+      },
+      idRate: {
          type: DataTypes.INTEGER,
          allowNull: true
       },
@@ -59,20 +66,37 @@ const orderServiceModel = db.define(
    }
 );
 
-Vehicle.hasMany(orderServiceModel, { foreignKey: 'id' });
+Vehicle.hasMany(orderModel, { foreignKey: 'id' });
 
-orderServiceModel.belongsTo(Vehicle, {
+orderModel.belongsTo(Vehicle, {
    foreignKey: 'idVehicle',
    as: 'vehicle'
 });
 
-clientModel.hasMany(orderServiceModel, { foreignKey: 'id' });
+clientModel.hasMany(orderModel, { foreignKey: 'id' });
 
-orderServiceModel.belongsTo(clientModel, {
+orderModel.belongsTo(clientModel, {
    foreignKey: 'idClient',
    as: 'client'
 });
 
-// orderServiceModel.belongsToMany(orderServiceModel, { through: orderResourceModel });
+statusOrderModel.hasMany(orderModel, { foreignKey: 'id' });
+orderModel.belongsTo(statusOrderModel, {
+   foreignKey: 'idStatusOrder',
+   as: 'status'
+});
 
-export default orderServiceModel;
+
+salePointModel.hasMany(orderModel, { foreignKey: 'id' });
+orderModel.belongsTo(salePointModel, {
+   foreignKey: 'idSalePoint',
+   as: 'salePoint'
+});
+
+RateModel.hasMany(orderModel, { foreignKey: 'id' });
+orderModel.belongsTo(RateModel, {
+   foreignKey: 'idRate',
+   as: 'rate'
+});
+
+export default orderModel;

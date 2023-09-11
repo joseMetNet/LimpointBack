@@ -35,7 +35,7 @@ export const login = async (req: Request, res: Response) => {
          });
       }
 
-      const token = await generateJWT(userExist.id, '1h');
+      const token = await generateJWT(userExist.id, '5h');
       const expiresIn = await parseJwt(token);
 
       const user = {
