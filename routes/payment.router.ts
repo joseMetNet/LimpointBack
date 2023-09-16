@@ -9,7 +9,7 @@ const paymentRouter = Router();
 paymentRouter.get('/payment', getPayment);
 paymentRouter.post(
    '/payment',
-   [ check('typePay', 'El tipo de vehículo es obligatorio').not().isEmpty(), validateFields ],
+   [ check('typePay', 'El tipo de pago es obligatorio').not().isEmpty(), validateFields ],
    postPayment
 );
 

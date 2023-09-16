@@ -4,11 +4,11 @@ import objectModel from '../models/objects.model';
 export const getObjects = async (req: Request, res: Response) => {
    try {
       const objects = await objectModel.findAll();
-      if (objects.length == 0) {
-         return res.status(204).json({
-            msg: `Lo sentimos, no encontramos resultados`
-         });
-      }
+      // if (objects.length == 0) {
+      //    return res.status(204).json({
+      //       msg: `Lo sentimos, no encontramos resultados`
+      //    });
+      // }
 
       return res.status(200).json({
          msg: 'Consulta realizada con exito',

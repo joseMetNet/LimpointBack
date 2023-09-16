@@ -201,19 +201,13 @@ export const getResourcesOrder = async (req: Request, res: Response) => {
             model: orderModel,
             as: 'order',
             where: { id: idOrder },
-            through: { attributes: [] },
+            through: { attributes: [ 'id' ] },
             attributes: [ 'id' ]
          }
       });
 
-      if (resources.length == 0) {
-         return res.status(204).json({
-            msg: `Lo sentimos, no hay archivos para mostrar`
-         });
-      }
-
       return res.json({
-         msg: 'Consulta realizad con éxito',
+         msg: 'Consulta realizada con éxito',
          resources
       });
    } catch (error) {
@@ -222,5 +216,51 @@ export const getResourcesOrder = async (req: Request, res: Response) => {
       return res.status(500).json({
          msg: 'Lo sentimos hubo un error en el servidor'
       });
+   }
+};
+
+export const deleteResourcesOrder = async (req: Request, res: Response) => {
+   try {
+      const { id }: any = req.params;
+
+      const resource: any = await orderResourceModel.findOne({ where: { id } });
+
+      if (!resource) {
+         return res.status(404).json({
+            msg: `Lo sentimos no existe el archivo`
+         });
+      }
+
+      await deleteResourceLocal(resource.idResource);
+
+      await resource.destroy();
+
+      return res.json({
+         msg: 'Archivo eliminado con éxito',
+         resource
+      });
+   } catch (error) {
+      console.log(error);
+
+      return res.status(500).json({
+         msg: 'Lo sentimos hubo un error en el servidor'
+      });
+   }
+};
+
+const deleteResourceLocal = async (id: any) => {
+   try {
+      const resource: any = await ResourceModel.findByPk(id);
+      if (!resource) {
+      }
+
+      // Delete image storage azure
+      const blobService = BlobServiceClient.fromConnectionString(azureConfig);
+      const imageSplit = resource.url.split('/');
+      const name = imageSplit[imageSplit.length - 1];
+      await deleteFileAzure(blobService, 'images', name);
+      await resource.destroy();
+   } catch (error) {
+      console.log(error);
    }
 };

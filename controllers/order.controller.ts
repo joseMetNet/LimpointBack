@@ -25,7 +25,7 @@ const statusOptions = StatusOrderOptions;
 
 // const baseUrl = process.env.URL_FRONT;
 // const baseUrl = process.env.URL_FRONT || 'http://localhost:4200/'
-const baseUrl = process.env.URL_FRONT || 'https://limpointfron.azurewebsites.net/#/'
+const baseUrl = process.env.URL_FRONT || 'https://limpointfron.azurewebsites.net/#/';
 
 export const getStatusOrder = async (req: Request, res: Response) => {
    try {
@@ -40,6 +40,30 @@ export const getStatusOrder = async (req: Request, res: Response) => {
       return res.status(200).json({
          msg: 'Consulta realizada con exito',
          statusOrders
+      });
+   } catch (error) {
+      console.log('error: ', error);
+      return res.status(500).json({
+         msg: 'Lo sentimos hubo un error en el servidor'
+      });
+   }
+};
+export const updateDataStatusOrder = async (req: Request, res: Response) => {
+   try {
+      const { id, name } = req.body;
+      const statusOrderExist: any = await statusOrderModel.findByPk(id);
+
+      if (!statusOrderExist) {
+         return res.status(404).json({
+            msg: `El estado de orden con el id ${id} no existe`
+         });
+      }
+
+      await statusOrderExist.update({ name });
+
+      return res.status(200).json({
+         msg: 'Consulta realizada con exito',
+         statusOrderExist
       });
    } catch (error) {
       console.log('error: ', error);
@@ -95,7 +119,11 @@ export const getOrders = async (req: Request, res: Response) => {
 
       const { count, rows }: any = await orderModel.findAndCountAll({
          where: {
-            [Op.or]: [ { idStatusOrder: statusOptions.PENDING }, { idStatusOrder: statusOptions.ACCEPTED } ],
+            [Op.or]: [
+               { idStatusOrder: statusOptions.PENDING },
+               { idStatusOrder: statusOptions.ACCEPTED },
+               { idStatusOrder: statusOptions.NOTIFIED }
+            ],
             // idStatusOrder: statusOptions.PENDING,
             idSalePoint: salePoint
          },
@@ -176,7 +204,7 @@ export const getOrderById = async (req: Request, res: Response) => {
             {
                model: serviceDetailModel,
                as: 'typeWash',
-               through: { attributes: [] },
+               through: { attributes: [ 'id' ] },
                include: [
                   {
                      model: typeServiceModel,
@@ -339,6 +367,61 @@ export const postOrder = async (req: Request, res: Response) => {
    }
 };
 
+export const updateOrder = async (req: Request, res: Response) => {
+   try {
+      const { car, client, services, order } = req.body;
+
+      car.plate = car.plate.toString().toUpperCase();
+
+      let vehicle: any, clientToSave: any;
+
+      const vehicleExist: any = await Vehicle.findOne({
+         where: {
+            plate: car.plate
+         }
+      });
+
+      if (vehicleExist) {
+         vehicle = await vehicleExist.update(car);
+         const clientExist = await clientModel.findByPk(vehicleExist.idClient);
+         if (clientExist) {
+            clientToSave = await clientExist.update(client);
+         }
+      } else {
+         clientToSave = clientModel.build(client);
+         await clientToSave.save();
+         car.idClient = clientToSave.id;
+         vehicle = Vehicle.build(car);
+         await vehicle.save();
+      }
+
+      const finalOrder = { ...order, idVehicle: vehicle.id, idClient: clientToSave.id };
+      const orderCreated: any = await orderModel.findByPk(order.id);
+      await orderCreated.update(finalOrder);
+      const orderServices = [];
+
+      for await (const item of services) {
+         const newItem = {
+            idDetailService: item.id,
+            idOrder: orderCreated.id
+         };
+         orderServices.push(newItem);
+      }
+
+      await orderDetailServiceModel.bulkCreate(orderServices);
+
+      return res.status(200).json({
+         msg: 'Orden actulizada exitosamente',
+         order: orderCreated
+      });
+   } catch (error) {
+      console.log(error);
+      return res.status(500).json({
+         msg: 'Lo sentimos hubo un error en el servidor'
+      });
+   }
+};
+
 export const updateStatusOrder = async (req: Request, res: Response) => {
    try {
       const { id, idStatusOrder } = req.body;
@@ -392,7 +475,7 @@ export const updateStatusOrder = async (req: Request, res: Response) => {
       let link = '';
 
       switch (idStatusOrder) {
-         case statusOptions.NOTIFIED:
+         case statusOptions.PENDING:
             link = `${baseUrl}orden-de-servicio/${order.id}`;
             const services = await returnServices(order.typeWash);
             message = `${order.client.name} ${order.client.lastname} usted ha adquirido el servicio de ${services} para ${order.vehicle.typeVehicle.typeVehicle}, en nuestro centro de servicio ${order.salePoint.name}, por favor ACEPTE EL SERVICIO EN EL SIGUIENTE ${link}`;
@@ -443,6 +526,11 @@ export const updateOrderInventory = async (req: Request, res: Response) => {
             objectList.push(newItem);
          }
 
+         await objectOrderModel.destroy({
+            where: {
+               idOrder: order.id
+            }
+         });
          await objectOrderModel.bulkCreate(objectList);
       }
 
@@ -514,4 +602,30 @@ const returnServices = async (services: any) => {
 
       return res;
    } catch (error) {}
+};
+
+export const deleteDetailOrderService = async (req: Request, res: Response) => {
+   try {
+      const { id } = req.params;
+
+      const detailExist = await orderDetailServiceModel.findOne({ where: { id } });
+
+      if (!detailExist) {
+         return res.status(400).json({
+            msg: `Lo sentimos, no encontramos resultados`
+         });
+      }
+
+      await detailExist.destroy();
+
+      return res.status(200).json({
+         msg: 'Se eliminó con éxito',
+         detailExist
+      });
+   } catch (error) {
+      console.log('error: ', error);
+      return res.status(500).json({
+         msg: 'Lo sentimos hubo un error en el servidor'
+      });
+   }
 };

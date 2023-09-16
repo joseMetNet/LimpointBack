@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { postResource, getResources, deleteResource, postResourceOrder, getResourcesOrder } from '../controllers/resource.controller';
+import { postResource, getResources, deleteResource, postResourceOrder, getResourcesOrder, deleteResourcesOrder } from '../controllers/resource.controller';
 
 const resourceRouter = Router();
 
@@ -12,5 +12,6 @@ resourceRouter.get("/resource",getResources);
 resourceRouter.delete("/resource/:id", deleteResource);
 resourceRouter.post("/resourceOrder",postResourceOrder);
 resourceRouter.get("/resourceOrder/:idOrder",getResourcesOrder);
+resourceRouter.delete("/resourceOrder/:id",deleteResourcesOrder);
 
 export default resourceRouter;

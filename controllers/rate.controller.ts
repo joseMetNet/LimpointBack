@@ -63,3 +63,28 @@ export const postRateOrder = async (req: Request, res: Response) => {
       });
    }
 };
+
+export const updateTypeRate = async (req: Request, res: Response) => {
+   try {
+      const { id, name } = req.body;
+      const typeRateExist: any = await TypeRateModel.findByPk(id);
+
+      if (!typeRateExist) {
+         return res.status(404).json({
+            msg: `El tipo de calificacion con el id ${id} no existe`
+         });
+      }
+
+      await typeRateExist.update({ name });
+
+      return res.status(200).json({
+         msg: 'Consulta realizada con exito',
+         typeRateExist
+      });
+   } catch (error) {
+      console.log('error: ', error);
+      return res.status(500).json({
+         msg: 'Lo sentimos hubo un error en el servidor'
+      });
+   }
+};
