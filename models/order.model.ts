@@ -35,6 +35,11 @@ const orderModel = db.define(
          type: DataTypes.INTEGER,
          allowNull: false
       },
+      discountValue: {
+         type: DataTypes.INTEGER,
+         allowNull: false,
+         defaultValue: 0
+      },
       observations: {
          type: DataTypes.STRING,
          allowNull: true
@@ -85,7 +90,6 @@ orderModel.belongsTo(statusOrderModel, {
    foreignKey: 'idStatusOrder',
    as: 'status'
 });
-
 
 salePointModel.hasMany(orderModel, { foreignKey: 'id' });
 orderModel.belongsTo(salePointModel, {
