@@ -122,7 +122,7 @@ export const getOrders = async (req: Request, res: Response) => {
             [Op.or]: [
                { idStatusOrder: statusOptions.PENDING },
                { idStatusOrder: statusOptions.ACCEPTED },
-               { idStatusOrder: statusOptions.NOTIFIED }
+               // { idStatusOrder: statusOptions.NOTIFIED }
             ],
             // idStatusOrder: statusOptions.PENDING,
             idSalePoint: salePoint
