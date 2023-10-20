@@ -159,6 +159,86 @@ export const getOrders = async (req: Request, res: Response) => {
    }
 };
 
+export const getOrdersAll = async (req: Request, res: Response) => {
+   try {
+      const { salePoint, plate, name, phone } = req.query;
+      const page: any = req.query.page ? req.query.page : 0;
+      const size: any = req.query.size ? req.query.size : 10;
+      const skip = page * size;
+
+      let clientJson: any = {
+         model: clientModel,
+         as: 'client'
+      };
+
+      if (name) {
+         clientJson = {
+            ...clientJson,
+            where: { name: { [Op.substring]: `${name}` } }
+         };
+      }
+      if (phone) {
+         clientJson = {
+            ...clientJson,
+            where: { ...clientJson.where, phone: { [Op.substring]: `${phone}` } }
+         };
+      }
+
+      let vehicleJson: any = {
+         model: Vehicle,
+         as: 'vehicle'
+         // include: [ clientJson ]
+      };
+
+      if (plate) {
+         vehicleJson = {
+            ...vehicleJson,
+            where: { plate: { [Op.substring]: `${plate}` } }
+         };
+      }
+
+      if (!salePoint) {
+         return res.status(404).json({
+            msg: `El id del punto de venta es requerido`
+         });
+      }
+
+      const { count, rows }: any = await orderModel.findAndCountAll({
+         where: {
+            idSalePoint: salePoint
+         },
+         include: [
+            {
+               model: statusOrderModel,
+               as: 'status'
+            },
+            vehicleJson,
+            clientJson
+         ],
+         offset: parseInt(skip.toString()),
+         limit: parseInt(size.toString()),
+         order: [ [ 'id', 'DESC' ] ]
+      });
+
+      if (rows.length == 0) {
+         return res.status(400).json({
+            msg: `Lo sentimos, no encontramos resultados`
+         });
+      }
+
+      return res.status(200).json({
+         msg: 'Consulta realizada con exito',
+         orders: rows,
+         pagination: { sizeItems: count, page, size }
+      });
+   } catch (error) {
+      console.log('error: ', error);
+      return res.status(500).json({
+         msg: 'Lo sentimos hubo un error en el servidor'
+      });
+   }
+};
+
 export const getOrderById = async (req: Request, res: Response) => {
    try {
       const { id } = req.params;

@@ -13,11 +13,12 @@ import {
 } from '../controllers/order.controller';
 import { check } from 'express-validator';
 import { validateFields } from '../middlewares/validations';
-import { updateOrder } from '../controllers/order.controller';
+import { updateOrder, getOrdersAll } from '../controllers/order.controller';
 
 const orderRouter = Router();
 
 orderRouter.get('/order', getOrders);
+orderRouter.get('/ordersHistory', getOrdersAll);
 orderRouter.get('/orderStatus', getStatusOrder);
 orderRouter.get('/orderSize/:plate', getOrderSize);
 orderRouter.get('/order/:id', getOrderById);
