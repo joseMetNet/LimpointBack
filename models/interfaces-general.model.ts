@@ -4,5 +4,5 @@ export enum StatusOrderOptions {
     FINALIZED = 3,
     ACCEPTED = 4,
     DENIED = 5,
-    NOTIFIED = 6
+    RATED = 6
  }

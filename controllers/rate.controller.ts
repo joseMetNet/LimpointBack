@@ -3,6 +3,10 @@ import TypeRateModel from '../models/typeRate.model';
 import ResourceModel from '../models/resource.model';
 import orderModel from '../models/order.model';
 import RateModel from '../models/rateOrder.model';
+import { StatusOrderOptions } from '../models/interfaces-general.model';
+
+const statusOptions = StatusOrderOptions;
+
 
 export const getTypeRates = async (req: Request, res: Response) => {
    try {
@@ -50,7 +54,7 @@ export const postRateOrder = async (req: Request, res: Response) => {
       const rateCreated: any = RateModel.build({ idTypeRate, observation });
       await rateCreated.save();
 
-      await order.update({ idRate: rateCreated.id });
+      await order.update({ idRate: rateCreated.id , idStatusOrder: statusOptions.RATED});
 
       return res.status(200).json({
          msg: 'Se ha registrado la calificación exitosamente',
