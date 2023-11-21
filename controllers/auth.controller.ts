@@ -40,6 +40,7 @@ export const login = async (req: Request, res: Response) => {
 
       const user = {
          id: userExist.id,
+         idRol: userExist.idRol,
          name: userExist.userName,
          email: userExist.email,
          salePoint: userExist.salePoint
