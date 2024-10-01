@@ -1,10 +1,16 @@
 import { Request, Response } from 'express';
 import agreementModel from '../models/agreement.model';
 
-
 export const getAgreements = async (req: Request, res: Response) => {
    try {
-      const agreements = await agreementModel.findAll();
+      const agreements = await agreementModel.findAll({
+         attributes: {
+            exclude: [ 'deleted' ]
+         },
+         where: {
+            deleted: false
+         }
+      });
       if (agreements.length == 0) {
          return res.status(204).json({
             msg: `Lo sentimos, no encontramos resultados`
@@ -13,7 +19,8 @@ export const getAgreements = async (req: Request, res: Response) => {
 
       return res.status(200).json({
          msg: 'Consulta realizada con exito',
-         agreements
+         agreements,
+         size: agreements.length
       });
    } catch (error) {
       console.log('error: ', error);

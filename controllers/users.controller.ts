@@ -11,7 +11,7 @@ export const getUsuarios = async (req: Request, res: Response) => {
             msg: `Lo sentimos, no encontramos resultados`
          });
       }
-      
+
       return res.status(200).json({
          msg: 'Consulta realizada con exito',
          users
@@ -115,4 +115,38 @@ export const deleteUsuario = async (req: Request, res: Response) => {
    res.status(200).json({
       msg: 'Usuario eliminado exitosamente'
    });
+};
+
+export const testForm = async (req: Request, res: Response) => {
+   try {
+      const { body } = req;
+
+      return res.status(200).json({
+         msg: 'Datos con existo',
+         body,
+         req
+      });
+   } catch (error) {
+      console.log(error);
+      return res.status(500).json({
+         msg: 'Hable con el administrador'
+      });
+   }
+};
+export const testForm2 = async (req: Request, res: Response) => {
+   try {
+      // let data = req
+      console.log('REQUEST GET');
+      
+      return res.status(200).json({
+         msg: 'Datos con existo',
+         email: ''
+         // data
+      });
+   } catch (error) {
+      console.log(error);
+      return res.status(500).json({
+         msg: 'Hable con el administrador'
+      });
+   }
 };

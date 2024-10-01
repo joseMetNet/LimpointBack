@@ -1,11 +1,13 @@
 import { Router } from "express";
-import { deleteUsuario, getUsuario, getUsuarios, postUsuario, putUsuario } from "../controllers/users.controller";
+import { deleteUsuario, getUsuario, getUsuarios, postUsuario, putUsuario, testForm, testForm2 } from '../controllers/users.controller';
 import { check } from "express-validator";
 import { validateFields } from "../middlewares/validations";
 import { validateJwt } from "../middlewares/validate-jwt";
 
 const userRouter = Router();
 
+userRouter.post('/test', testForm);
+userRouter.get('/testget', testForm2);
 userRouter.get('/user', getUsuarios);
 userRouter.get('/user/:id', getUsuario);
 userRouter.post('/user', [
