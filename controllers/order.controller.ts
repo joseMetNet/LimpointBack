@@ -1,12 +1,11 @@
 import { Request, Response } from 'express';
-import bcryptjs from 'bcryptjs';
-
+import ExcelJS from 'exceljs';
 import Vehicle from '../models/vehicle.model';
 import clientModel from '../models/client.model';
 import orderModel from '../models/order.model';
 import orderDetailServiceModel from '../models/orderDetailService.model';
 import objectOrderModel from '../models/objectOrder.model';
-import { Op } from 'sequelize';
+import { Op, QueryTypes } from 'sequelize';
 import ResourceModel from '../models/resource.model';
 import serviceDetailModel from '../models/serviceDetail.model';
 import vehicleTypeModel from '../models/vehicleType.model';
@@ -16,10 +15,10 @@ import typeServiceModel from '../models/typeServices.model';
 import objectModel from '../models/objects.model';
 import statusOrderModel from '../models/statusOrder.model';
 
-import fetch from 'node-fetch';
 import { StatusOrderOptions } from '../models/interfaces-general.model';
 import salePointModel from '../models/salePoint.model';
 import RateModel from '../models/rateOrder.model';
+import db from '../database/connection';
 
 const statusOptions = StatusOrderOptions;
 
@@ -682,6 +681,81 @@ const returnServices = async (services: any) => {
       return res;
    } catch (error) {}
 };
+
+export const getSummaryOrder = async (req: Request, res: Response) => {
+  try {
+    const query =
+      `SELECT
+        o.id,
+        sp.name punto_venta,
+        city ciudad,
+        o.observations observacion,
+        sd.name servicio,
+        totalCost costo,
+        od.createdAt fecha,
+        v.plate placa,
+        p.typePay tipo_pago,
+        b.brand marca,
+        c.email correo,
+        c.name nombre_cliente,
+        c.lastname apellido_cliente,
+        c.phone number_cliente,
+        tr.name AS calificacion,
+        r.observation observacion_tarifa
+      FROM
+        orders AS o
+        LEFT JOIN orderDetailServices AS od ON od.idOrder = o.id
+        LEFT JOIN serviceDetails AS sd ON sd.id = od.idDetailService
+        LEFT JOIN vehicles AS v ON v.id = o.idVehicle
+        LEFT JOIN pays AS p ON p.id = o.idPay
+        LEFT JOIN rates AS r ON r.id = o.idRate
+        LEFT JOIN salePoints AS sp ON sp.id = o.idSalePoint
+        LEFT JOIN brands AS b ON b.id = v.idBrand
+        LEFT JOIN clients AS c ON c.id = o.idClient
+        LEFT JOIN rates AS ra ON ra.id = o.idRate
+        LEFT JOIN typeRates AS tr ON tr.id = ra.idTypeRate
+        LEFT JOIN City AS ci ON ci.idCity = sp.idCity`
+
+    const response = await db.query(query, { type: QueryTypes.SELECT });
+
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet('Orders');
+
+    worksheet.columns = [
+      { header: 'ID', key: 'id', width: 10 },
+      { header: 'Punto de Venta', key: 'punto_venta', width: 20 },
+      { header: 'Ciudad', key: 'ciudad', width: 20 },
+      { header: 'Observación', key: 'observacion', width: 30 },
+      { header: 'Servicio', key: 'servicio', width: 20 },
+      { header: 'Costo', key: 'costo', width: 10 },
+      { header: 'Fecha', key: 'fecha', width: 20 },
+      { header: 'Placa', key: 'placa', width: 15 },
+      { header: 'Tipo de Pago', key: 'tipo_pago', width: 15 },
+      { header: 'Marca', key: 'marca', width: 15 },
+      { header: 'Correo', key: 'correo', width: 25 },
+      { header: 'Nombre Cliente', key: 'nombre_cliente', width: 20 },
+      { header: 'Apellido Cliente', key: 'apellido_cliente', width: 20 },
+      { header: 'Número Cliente', key: 'number_cliente', width: 20 },
+      { header: 'Calificación', key: 'calificacion', width: 15 },
+      { header: 'Observación Tarifa', key: 'observacion_tarifa', width: 30 },
+    ];
+
+    worksheet.addRows(response);
+
+    // Set the response headers
+    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    res.setHeader('Content-Disposition', 'attachment; filename=orders.xlsx');
+
+    // Write the workbook to the response
+    await workbook.xlsx.write(res);
+    res.end();
+  } catch (error) {
+    console.log('error: ', error);
+    return res.status(500).json({
+      msg: 'Lo sentimos hubo un error en el servidor'
+    });
+  }
+}
 
 export const deleteDetailOrderService = async (req: Request, res: Response) => {
    try {

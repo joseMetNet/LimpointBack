@@ -9,7 +9,8 @@ import {
    updateStatusOrder,
    getOrderRateById,
    updateDataStatusOrder,
-   deleteDetailOrderService
+   deleteDetailOrderService,
+   getSummaryOrder
 } from '../controllers/order.controller';
 import { check } from 'express-validator';
 import { validateFields } from '../middlewares/validations';
@@ -22,6 +23,7 @@ orderRouter.get('/ordersHistory', getOrdersAll);
 orderRouter.get('/orderStatus', getStatusOrder);
 orderRouter.get('/orderSize/:plate', getOrderSize);
 orderRouter.get('/order/:id', getOrderById);
+orderRouter.get('/orderSummarize', getSummaryOrder);
 orderRouter.get('/orderRate/:id', getOrderRateById);
 orderRouter.post(
    '/order',
