@@ -24,7 +24,7 @@ const statusOptions = StatusOrderOptions;
 
 // const baseUrl = process.env.URL_FRONT;
 // const baseUrl = process.env.URL_FRONT || 'http://localhost:4200/'
-const baseUrl = process.env.URL_FRONT || 'https://limpointfron.azurewebsites.net/#/';
+const baseUrl = process.env.URL_FRONT || 'https://limpointfron.azurewebsites.net//#/';
 
 export const getStatusOrder = async (req: Request, res: Response) => {
    try {
