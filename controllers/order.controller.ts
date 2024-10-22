@@ -24,7 +24,7 @@ const statusOptions = StatusOrderOptions;
 
 // const baseUrl = process.env.URL_FRONT;
 // const baseUrl = process.env.URL_FRONT || 'http://localhost:4200/'
-const baseUrl = process.env.URL_FRONT || 'https://limpointfron.azurewebsites.net//#/';
+const baseUrl = process.env.URL_FRONT || 'https://limpointfron.azurewebsites.net/#/';
 
 export const getStatusOrder = async (req: Request, res: Response) => {
    try {
@@ -551,16 +551,19 @@ export const updateStatusOrder = async (req: Request, res: Response) => {
 
       let message = '';
       let link = '';
-
+      
       switch (idStatusOrder) {
          case statusOptions.PENDING:
-            link = `${baseUrl}orden-de-servicio/${order.id}`;
+            link = `${baseUrl}/#/orden-de-servicio/${order.id}`;
+            
             const services = await returnServices(order.typeWash);
             message = `${order.client.name} ${order.client.lastname} usted ha adquirido el servicio de ${services} para ${order.vehicle.typeVehicle.typeVehicle}, en nuestro centro de servicio ${order.salePoint.name}, por favor ACEPTE EL SERVICIO EN EL SIGUIENTE ${link}`;
+            console.log("QUE ENVIA",message);
             await sendMsm(message, order.client.phone);
             break;
          case statusOptions.FINALIZED:
-            link = `${baseUrl}calificar-servicio/${order.id}`;
+            link = `${baseUrl}/#/calificar-servicio/${order.id}`;
+            
             message = `Gracias por haber adquirido nuestros servicios, con el ánimo de mejorar cada día, les pedimos califiquen nuestro servicio a través de este link ${link}`;
             await sendMsm(message, order.client.phone);
             break;
