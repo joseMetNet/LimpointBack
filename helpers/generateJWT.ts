@@ -26,9 +26,10 @@ export const parseJwt = async (token: any) => {
       if (err) {        
         reject("No se generó el Token");
       } else {
-        // let date = new Date();        
-        // date.setTime(decoded.exp * 1000);
-        resolve(decoded.exp * 1000);
+        let date = new Date();        
+        date.setTime(decoded.exp * 1000);
+        // resolve(decoded.exp * 1000);
+        resolve(date);
       }
     });
   });

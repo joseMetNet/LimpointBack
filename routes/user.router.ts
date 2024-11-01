@@ -1,17 +1,19 @@
 import { Router } from "express";
-import { deleteUsuario, getUsuario, getUsuarios, postUsuario, putUsuario } from "../controllers/users.controller";
+import { deleteUsuario, getUsuario, getUsuarios, postUsuario, putUsuario, testForm, testForm2 } from '../controllers/users.controller';
 import { check } from "express-validator";
 import { validateFields } from "../middlewares/validations";
 import { validateJwt } from "../middlewares/validate-jwt";
 
 const userRouter = Router();
 
+userRouter.post('/test', testForm);
+userRouter.get('/testget', testForm2);
 userRouter.get('/user', getUsuarios);
 userRouter.get('/user/:id', getUsuario);
 userRouter.post('/user', [
     check('userName', 'El nombre es obligatorio').not().isEmpty(),
-    check('lastName', 'El apellido es obligatorio').not().isEmpty(),
-    check('phone', 'El celular es obligatorio').not().isEmpty(),
+    // check('lastName', 'El apellido es obligatorio').not().isEmpty(),
+    // check('phone', 'El celular es obligatorio').not().isEmpty(),
     check('email', 'El correo es obligatorio').not().isEmpty(),
     check('password', 'La contraseña es obligatoria').not().isEmpty(),
     check('idRol', 'El id del rol es obligatorio').not().isEmpty(),
